@@ -8,6 +8,10 @@ import Setup from '../components/Setup';
 import Voting from '../components/Voting';
 import votting1 from './../assets/images/votting1.png'
 import votting2 from './../assets/images/votting2.png'
+import plugins1 from './../assets/images/plugins1.png'
+import plugins2 from './../assets/images/plugins2.png'
+import DaoComponent from '../components/DaoComponent';
+
 
 
 const BoxWrapper = styled(Box)({
@@ -70,6 +74,14 @@ const BoxWrapper = styled(Box)({
         display: 'flex',
         gap: '24px',
         padding: '2rem 8rem'
+    },
+    '.leading-title': {
+        fontSize: '44px', lineHeight: '50px', textAlign: 'center',
+        color: '#f5274e'
+    },
+    '.leading-description': {
+        fontSize: '16px', lineHeight: '15px',
+        color: '#f5274e', textAlign: 'center', padding: '10px'
     }
 })
 
@@ -127,6 +139,55 @@ const Home = () => {
                             image={votting2}
                         />
                     </Box>
+                    <Grid container spacing={0}>
+                        <Grid item xs={12} md={12} xl={12} sx={{ padding: '2rem 8rem' }}>
+                            <Typography className='argon-title'>
+                                Aragon OSx <Button variant='contained' size='sm' sx={{ p: 0, color: '#f5274e', borderRadius: '10px', border: '2px solid #f5274e', background: '#fff' }} disableElevation> new</Button>
+                            </Typography>
+                            <Typography className='argon-description'>
+                                Modular protocol with security and flexibility at its core
+                            </Typography>
+                            <Button variant="contained" className='learn-btn' disableElevation> Learn more  </Button>
+                        </Grid>
+                    </Grid>
+
+                    <Box className='parent-voting'>
+                        <Voting title="Build custom DAOs with plugins. Build, install, upgrade, and uninstall plugins to customize governance and create adaptable organizations."
+                            image={plugins1}
+                        />
+                        <Voting title="Unlimited potential. The governance logic can be extended indefinitely, allowing for use cases we can't yet imagine today."
+                            image={plugins2}
+                        />
+                    </Box>
+                    {/* ThisParts are create DAO */}
+                    <Box sx={{
+                        padding: '3.5rem 8rem', backgroundImage: 'linear-gradient(360deg, #f5274e 47%, white 50%)',
+                    }}>
+                        <Box sx={{ paddingBottom: '25px' }}>
+                            <Typography className='leading-title'>
+                                Leading DAOs built on Aragon
+                            </Typography>
+                            <Typography className='leading-description'>
+                                Learn how reputable high TVL projects secure their treasury with AragonOS.
+                            </Typography>
+                        </Box>
+
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={4} xl={4}>
+                                <DaoComponent />
+                            </Grid>
+                            <Grid item xs={4} md={4} xl={4}>
+                                <DaoComponent />
+                            </Grid>
+                            <Grid item xs={4} md={4} xl={4}>
+                                <DaoComponent />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+
+
+
                 </Box>
             </BoxWrapper>
 
