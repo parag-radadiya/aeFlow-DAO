@@ -1,15 +1,13 @@
-import logo from './logo.svg';
 import './App.css';
+import Setup from './components/Setup';
+import Home from './pages/Home';
+
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <div>
-          Wel-come To Our DEO-web 
-        </div>
-      </header>
+      <Home />
+      {/* <Setup /> */}
     </div>
   );
 }
