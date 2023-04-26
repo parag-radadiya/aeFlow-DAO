@@ -40,7 +40,9 @@ const Navbar = () => {
           </Grid>
           <Grid item xs={12} xl={6} md={6} >
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button variant="contained" className='launch-btn'> <RocketLaunchIcon style={{ fontSize: 'large', paddingRight: '8px' }} /> Launch your DAO</Button>
+              <Link to='/dao-homepage'>
+                <Button variant="contained" className='launch-btn'> <RocketLaunchIcon style={{ fontSize: 'large', paddingRight: '8px' }} /> Launch your DAO</Button>
+              </Link>
             </Box>
           </Grid>
         </Grid>
