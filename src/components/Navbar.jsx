@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import { Button, Grid, styled } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import mainLogo from './../assets/images/daologo.jpg'
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
 
@@ -32,9 +33,10 @@ const Navbar = () => {
       <AppBar className='appbar' elevation={1} position="fixed">
         <Grid container spacing={0} >
           <Grid item xs={12} xl={6} md={6}>
-            <Box>
+            <Link to='/dashboard'>
               <img src={mainLogo} alt='DAO-LOGO' width={'50px'} />
-            </Box>
+            </Link>
+
           </Grid>
           <Grid item xs={12} xl={6} md={6} >
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>

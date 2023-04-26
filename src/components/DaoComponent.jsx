@@ -1,6 +1,7 @@
 import { Box, Button, Card, Typography, styled } from '@mui/material'
 import React from 'react'
 import dao from './../assets/images/createdao.png'
+import { Link } from 'react-router-dom'
 
 const BoxWrapper = styled(Box)({
     '.dao-title': {
@@ -15,7 +16,7 @@ const BoxWrapper = styled(Box)({
         background: '#f5274e',
         textTransform: 'none',
         fontSize: '16px',
-        fontWeight: 500,
+        fontWeight: 500, color: '#fff',
         borderRadius: '12px',
         padding: '6px 15px', margin: '16px 0px'
     },
@@ -37,7 +38,9 @@ const DaoComponent = () => {
                     <Typography className='description'>
                         A DAO is a decentralized autonomous organization, a type of bottom-up entity structure with no central authority. Members of a DAO own tokens of the DAO, and members can vote.
                     </Typography>
-                    <Button variant="contained" className='view-btn' disableElevation> View a DAO </Button>
+                    <Link to='/dashboard'>
+                        <Button variant="contained" className='view-btn' disableElevation> View a DAO  </Button>
+                    </Link>
                 </Card>
             </BoxWrapper>
         </React.Fragment>
