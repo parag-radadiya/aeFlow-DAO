@@ -8,7 +8,7 @@ const BoxWrapper = styled(Box)({
         fontSize: '28px',
         fontWeight: 700,
     },
-    '.description': {
+    '.description-dao': {
         fontSize: '16px', lineHeight: '25px',
         fontWeight: 600, padding: '10px'
     },
@@ -22,25 +22,32 @@ const BoxWrapper = styled(Box)({
     },
 })
 
-const DaoComponent = () => {
+const DaoComponent = ({ title, description, isFlag }) => {
     return (
         <React.Fragment>
             <BoxWrapper>
-                <Card variant="outlined" sx={{ p: 2, border: '1px solid #f5274e', background: '#fff4f4', borderRadius: '12px' }}>
+                <Card variant="outlined" sx={{ p: 3, border: '1px solid #f5274e', background: '#fff4f4', borderRadius: '12px' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: '15px' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', width: '30%' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', width: '25%' }}>
                             <img src={dao} alt='create-dao-image' width={'60%'} />
                         </Box>
                         <Typography className='dao-title'>
-                            Create your DAO
+                            {title}
                         </Typography>
                     </Box>
-                    <Typography className='description'>
-                        A DAO is a decentralized autonomous organization, a type of bottom-up entity structure with no central authority. Members of a DAO own tokens of the DAO, and members can vote.
+                    <Typography className='description-dao'>
+                        {description}
                     </Typography>
-                    <Link to='/dashboard'>
-                        <Button variant="contained" className='view-btn' disableElevation> View a DAO  </Button>
-                    </Link>
+                    {isFlag ?
+                        <Typography sx={{ padding: '22px 10px', fontSize: '20px', fontWeight: 500, color: '#9AA5B1' }}>
+                            Comming soon
+                        </Typography> :
+                        <Link to='/dashboard'>
+                            <Button variant="contained" className='view-btn' disableElevation> View a DAO  </Button>
+                        </Link>
+                    }
+
+
                 </Card>
             </BoxWrapper>
         </React.Fragment>

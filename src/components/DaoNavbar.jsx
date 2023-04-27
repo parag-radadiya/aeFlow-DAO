@@ -3,7 +3,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Button, Grid, styled } from '@mui/material';
-// import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+// import RocketdaoIcon from '@mui/icons-material/Rocketdao';
 import PersonIcon from '@mui/icons-material/Person';
 import mainLogo from './../assets/images/daologo.jpg'
 import { Link } from 'react-router-dom';
@@ -17,7 +17,7 @@ const DaoNavbar = () => {
             color: '#f5274e',
             background: 'linear-gradient(rgb(254,39,78) 0%, rgba(49, 100, 250, 0) 100%);'
         },
-        '.launch-btn': {
+        '.dao-btn': {
             background: '#fff',
             textTransform: 'capitalize',
             fontSize: '17px',
@@ -26,8 +26,8 @@ const DaoNavbar = () => {
             padding: '6px 15px',
             color: '#66727e'
         },
-        '.launch-btn:hover': {
-            background: '#f5274e'
+        '.dao-btn:hover': {
+            background: '#fff'
         }
     }));
 
@@ -39,11 +39,10 @@ const DaoNavbar = () => {
                         <Link to='/dashboard'>
                             <img src={mainLogo} alt='DAO-LOGO' width={'50px'} />
                         </Link>
-
                     </Grid>
                     <Grid item xs={12} xl={6} md={6} >
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button variant="contained" className='launch-btn'> Connect wallet  <PersonIcon style={{ fontSize: '23px', paddingLeft: '8px' }} /> </Button>
+                            <Button variant="contained" className='dao-btn'> Connect wallet  <PersonIcon style={{ fontSize: '23px', paddingLeft: '8px' }} /> </Button>
                         </Box>
                     </Grid>
                 </Grid>
