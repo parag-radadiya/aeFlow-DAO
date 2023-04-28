@@ -15,7 +15,8 @@ const DaoNavbar = () => {
             padding: '1.1rem 8rem',
             background: '#fff',
             color: '#f5274e',
-            background: 'linear-gradient(rgb(254,39,78) 0%, rgba(49, 100, 250, 0) 100%);'
+            // background: 'linear-gradient(rgb(254,39,78) 0%, rgba(49, 100, 250, 0) 100%);'
+            background: '#fff'
         },
         '.dao-btn': {
             background: '#fff',

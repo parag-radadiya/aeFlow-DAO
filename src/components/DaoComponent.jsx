@@ -22,7 +22,7 @@ const BoxWrapper = styled(Box)({
     },
 })
 
-const DaoComponent = ({ title, description, isFlag }) => {
+const DaoComponent = ({ title, description, btnTitle, isFlag }) => {
     return (
         <React.Fragment>
             <BoxWrapper>
@@ -42,11 +42,10 @@ const DaoComponent = ({ title, description, isFlag }) => {
                         <Typography sx={{ padding: '22px 10px', fontSize: '20px', fontWeight: 500, color: '#9AA5B1' }}>
                             Comming soon
                         </Typography> :
-                        <Link to='/dashboard'>
-                            <Button variant="contained" className='view-btn' disableElevation> View a DAO  </Button>
+                        <Link to='/create-dao'>
+                            <Button variant="contained" className='view-btn' disableElevation>{btnTitle}  </Button>
                         </Link>
                     }
-
 
                 </Card>
             </BoxWrapper>

@@ -7,6 +7,7 @@ import {
   Route, Routes
 } from "react-router-dom";
 import DaoHome from './pages/DaoHome';
+import BuildDaoPage from './pages/BuildDaoPage';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route exact path='/' element={<Home />} />
           <Route exact path='/dashboard' element={<Dashboard />} />
           <Route exact path='/dao-homepage' element={<DaoHome />} />
+          <Route exact path='/create-dao' element={<BuildDaoPage />} />
         </Routes>
       </Router>
       {/* <Setup /> */}

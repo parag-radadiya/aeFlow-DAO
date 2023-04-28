@@ -32,7 +32,7 @@ const BoxWrapper = styled(Box)({
     }
 })
 
-const Explore = ({ title, subTitle, description }) => {
+const Explore = ({ title, subTitle, description, btnTitle }) => {
     return (
         <BoxWrapper>
             <Card className='explore-card' elevation={0}>

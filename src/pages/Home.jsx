@@ -174,13 +174,13 @@ const Home = () => {
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={4} xl={4}>
-                                <DaoComponent title={'Create your DAO'} description='We are a nation of people who are aware that even the tiniest thing can make a major impact on the world we live.' />
+                                <DaoComponent title={'Create your DAO'} description='We are a nation of people who are aware that even the tiniest thing can make a major impact on the world we live.' btnTitle='Create your Dao' />
                             </Grid>
                             <Grid item xs={4} md={4} xl={4}>
-                                <DaoComponent title={'Create your DAO'} description='We are a nation of people who are aware that even the tiniest thing can make a major impact on the world we live.' />
+                                <DaoComponent title={'Create your DAO'} description='We are a nation of people who are aware that even the tiniest thing can make a major impact on the world we live.' btnTitle='Create your Dao' />
                             </Grid>
                             <Grid item xs={4} md={4} xl={4}>
-                                <DaoComponent title={'Create your DAO'} description='We are a nation of people who are aware that even the tiniest thing can make a major impact on the world we live.' />
+                                <DaoComponent title={'Create your DAO'} description='We are a nation of people who are aware that even the tiniest thing can make a major impact on the world we live.' btnTitle='Create your Dao' />
                             </Grid>
                         </Grid>
                     </Box>

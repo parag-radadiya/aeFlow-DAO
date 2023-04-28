@@ -58,10 +58,10 @@ const DaoHome = () => {
                 </Grid>
                 <Grid container columnSpacing={3.5} sx={{ marginTop: '-165px', position: 'relative' }}>
                     <Grid item xs={12} md={4} xl={4}>
-                        <DaoComponent title='Create your DAO' description='Mint tokens, set governance parameters, and deploy your DAO on-chain in minutes with our no-code setup process.' />
+                        <DaoComponent title='Create your DAO' description='Mint tokens, set governance parameters, and deploy your DAO on-chain in minutes with our no-code setup process.' btnTitle='Create a DAO' />
                     </Grid>
                     <Grid item xs={12} md={4} xl={4}>
-                        <DaoComponent title='Learn about DAOs' description='Find inspiration and learn about DAOs in our education portal designed for builders at every stage of the journey.' />
+                        <DaoComponent title='Learn about DAOs' description='Find inspiration and learn about DAOs in our education portal designed for builders at every stage of the journey.' btnTitle='Learn about DAOs' />
                     </Grid>
                     <Grid item xs={12} md={4} xl={4}>
                         <DaoComponent title='Build faster' description='Use our governance plugins to build a DAO, dApp, or anything you can imagine on the Aragon OSx protocol.'
@@ -82,12 +82,15 @@ const DaoHome = () => {
                         <Grid item xs={12} md={6} xl={6}>
                             <Explore title='Burnt Toast Nation'
                                 subTitle='burnttoastnation.dao.eth'
-                                description='We are a nation of people who are aware that even the tiniest thing a major impact on the world we live.  We collaborate, share resources. and some dao.' />
+                                description='We are a nation of people who are aware that even the tiniest thing a major impact on the world we live.  We collaborate, share resources. and some dao.'
+
+                            />
                         </Grid>
                         <Grid item xs={12} md={6} xl={6}>
                             <Explore title='PrimeDAO'
                                 subTitle='prime.dao.eth'
-                                description='PrimeDAO is a DAO coordination hub aimed at unleashing DAO to DAO potential.' />
+                                description='PrimeDAO is a DAO coordination hub aimed at unleashing DAO to DAO potential.'
+                            />
                         </Grid>
                         <Grid item xs={12} md={6} xl={6}>
                             <Explore title='zoomwatch'
