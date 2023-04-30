@@ -1,9 +1,7 @@
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { Button, Grid, styled } from '@mui/material';
-// import RocketdaoIcon from '@mui/icons-material/Rocketdao';
 import PersonIcon from '@mui/icons-material/Person';
 import mainLogo from './../assets/images/daologo.jpg'
 import { Link } from 'react-router-dom';
