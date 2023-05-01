@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
 import MobileStepper from '@mui/material/MobileStepper';
 import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -11,9 +10,11 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 
 const BoxWrapper = styled(Box)({
     padding: '0px 8rem',
+    background: '#F5F7FA',
     '.progress-card': {
         border: '2px solid #f5274e',
-        padding: '36px'
+        borderRadius: '12px',
+        padding: '36px', marginTop: '16px'
     },
     '.progress-title': {
         fontSize: '18px', fontWeight: 'bold',
@@ -50,13 +51,65 @@ const BoxWrapper = styled(Box)({
         fontSize: '40px', fontWeight: 700, paddingTop: '15px'
     }, ".pregress-desc": {
         fontSize: '20px', fontWeight: 500, color: '#52606D'
+    },
+
+    '.form-textarea': {
+        width: '100%',
+        border: '2px solid #E4E7EB',
+        borderRadius: '12px',
+        padding: '13px 16px',
+        background: '#fff', marginTop: '18px'
+    },
+    '.form-textarea::placeholder': {
+        fontSize: '16px',
+        color: '#A6ACB7'
+    },
+    '.form-field': {
+        width: '100%',
+        border: '2px solid #E4E7EB',
+        borderRadius: '12px',
+        padding: '13px 16px',
+        background: '#fff'
+    },
+    '.form-field::placeholder': {
+        fontSize: '16px',
+        color: '#A6ACB7'
+    },
+    '.field-title': {
+        fontSize: '18px',
+        fontWeight: 700,
+        color: '#4D5863'
+    },
+    '.field-subTitle': {
+        fontSize: '14px',
+        color: '#67747F',
+        paddingTop: '3px'
+    },
+    '.caracter-count': {
+        color: '#67747F',
+        fontSize: '14px',
+        paddingTop: '12px'
+    },
+    '.main-field': {
+        paddingTop: '2.5rem'
+    },
+    '.next-step': {
+        textTransform: 'none', fontSize: '16px', borderRadius: '12px',
+        background: '#3164FA'
+    },
+    '.error': {
+        color: 'red',
+        fontSize: '16px'
     }
+
 })
 
 
 const Stepper = () => {
-    const [activeStep, setActiveStep] = React.useState(0);
-
+    const [activeStep, setActiveStep] = React.useState(1);
+    //  for count the carecter --> 
+    const [characterCount, setCaracterCount] = React.useState(0);
+    // for stepper state ---->
     const [step, setStep] = React.useState(1);
 
     console.log("activeStep:", activeStep)
@@ -70,12 +123,12 @@ const Stepper = () => {
     };
 
     const DisplayingErrorMessagesSchema = Yup.object().shape({
-        username: Yup.string()
-            .min(2, 'Too Short!')
-            .max(50, 'Too Long!')
-            .required('Required'),
-        email: Yup.string().email('Invalid email').required('Required'),
-        secondEmail: Yup.string().email('Invalid email').required('Required'),
+        daoname: Yup.string()
+            .required('Dao-Name is Required'),
+        subdomain: Yup.string().required('Sub-Domain Required'),
+        description: Yup.string().required(' Description is Required'),
+        name: Yup.string().required(' Name is Required'),
+        symbol: Yup.string().required(' Symbol is Required'),
 
     })
 
@@ -85,9 +138,11 @@ const Stepper = () => {
                 <Box sx={{ p: 2 }}>
                     <Card className='progress-card' variant="outlined">
                         <Box className='parent-progress'>
+
                             <Typography className='progress-title'>
                                 Create your DAO
                             </Typography>
+
                             <Typography sx={{ color: 'grey' }}>
                                 Step {activeStep} of 4
                             </Typography>
@@ -98,13 +153,29 @@ const Stepper = () => {
                             position="static"
                             activeStep={activeStep}
                         />
+                        {
+                            (step == 1) &&
+                            <Box>
+                                <Typography className='progressbar-main'>
+                                    Describe your DAO
+                                </Typography>
+                                <Typography className='pregress-desc'>
+                                    Name and define your DAO so new contributors know they've come to the right place. This information is displayed on the DAO Explore page and can be changed with a vote. For ideas on DAO branding,
+                                </Typography>
+                            </Box>
+                        }
+                        {
+                            (step == 2) &&
+                            <Box>
+                                <Typography className='progressbar-main'>
+                                    Define membership
+                                </Typography>
+                                <Typography className='pregress-desc'>
+                                    Decide the type of voting your DAO uses. You can change these settings with a vote. For help deciding which type of governance is best for you
+                                </Typography>
+                            </Box>
+                        }
 
-                        <Typography className='progressbar-main'>
-                            Describe your DAO
-                        </Typography>
-                        <Typography className='pregress-desc'>
-                            Name and define your DAO so new contributors know they've come to the right place. This information is displayed on the DAO Explore page and can be changed with a vote. For ideas on DAO branding,
-                        </Typography>
 
                     </Card>
                     {/* <Box sx={{ padding: '20px' }}>
@@ -115,12 +186,14 @@ const Stepper = () => {
                             next <KeyboardArrowRight />
                         </Button >
                     </Box> */}
+
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Card elevation={0} sx={{ border: '2px solid #f5274e', width: '500px', padding: '20px', marginTop: '20px' }}>
+                        <Card elevation={0} sx={{ width: '650px', border: '1px dotted green', padding: '20px', marginTop: '20px', background: '#F5F7FA' }}>
                             <Formik
                                 initialValues={{
-                                    username: '',
-                                    email: '', secondEmail: ''
+                                    daoname: "",
+                                    subdomain: "",
+                                    description: "", secondEmail: '', name: '', symbol: ''
                                 }}
 
                                 validationSchema={DisplayingErrorMessagesSchema}
@@ -129,48 +202,143 @@ const Stepper = () => {
                                     console.log(values);
                                 }}
                             >
-                                {({ errors, touched, values }) => (
+                                {({ errors, touched, values, handleChange }) => (
                                     <Form>
                                         <Box sx={{ p: 2 }}>
                                             {
                                                 (step == 1) &&
                                                 <Box>
-                                                    <div>
-                                                        <label> User Name : </label>
-                                                    </div >
-                                                    <Field
-                                                        style={{ width: '100%' }}
-                                                        name="username"
-                                                        value={values.username}
-                                                    />
-                                                    {touched.username && errors.username && <div style={{ color: 'red' }}>{errors.username}</div>}
-                                                    <div style={{ paddingTop: '15px' }}>
-                                                        <label> Email : </label>
-                                                    </div >
-                                                    <Field
-                                                        style={{ width: '100%' }}
-                                                        value={values.email}
-                                                        name="email" />
-                                                    {touched.email && errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
-                                                    <div style={{ marginTop: '10px' }}>
-                                                        <button onClick={() => {
-                                                            if (values.email && values.username) {
+                                                    <Box>
+                                                        <Typography className='field-title'>
+                                                            DAO name
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            Maximum of 128 characters
+                                                        </Typography>
+                                                        {console.log("handleChange", handleChange)}
+                                                        <Field
+                                                            name="daoname"
+                                                            className='form-field'
+                                                            value={values.daoname}
+                                                            onChange={handleChange}
+                                                            placeholder='Type your DAOs name...'
+                                                        />
+                                                        <Typography className='caracter-count'>
+                                                            {characterCount}/128
+                                                        </Typography>
+                                                        <ErrorMessage name="daoname">{msg => <div className='error'>{msg}</div>}</ErrorMessage>
+                                                    </Box>
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            ENS Subdomain
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            This will be your DAO’s unique ENS subdomain, created automatically for you. Lowercase letters, numbers, and the dash '-' are all acceptable characters; ideally, the character count should be under 128.
+                                                        </Typography>
+                                                        {console.log("handleChange", handleChange)}
+                                                        <Field
+                                                            name="subdomain"
+                                                            className='form-field'
+                                                            value={values.subdomain}
+                                                            onChange={handleChange}
+                                                            placeholder='aragon'
+                                                        />
+                                                        <Typography className='caracter-count'>
+                                                            {characterCount}/128
+                                                        </Typography>
+                                                        <ErrorMessage name="subdomain">{msg => <div className='error'>{msg}</div>}</ErrorMessage>
+                                                    </Box>
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            LOGO
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            JPG, PNG, GIF, or SVG of no more than 3MB. We recommend 1024x1024px.
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            Description
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            Describe your DAO's purpose in a few sentences. This is listed on the Explore page so new contributors can find you.
+                                                        </Typography>
+                                                        <Field as='textarea'
+                                                            rows={7}
+                                                            name="description"
+                                                            className='form-textarea'
+                                                            value={values.description}
+                                                            onChange={handleChange}
+                                                            placeholder='Type your summary...'
+                                                        />
+                                                        <ErrorMessage name="description">{msg => <div className='error'>{msg}</div>}</ErrorMessage>
+                                                    </Box>
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            Links
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            Links to your DAO's website, social media profiles, Discord, or other places your community gathers.
+                                                        </Typography>
+                                                    </Box>
+                                                    <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                                                        <Button variant='contained' className='next-step' onClick={() => {
+                                                            if (values.daoname && values.subdomain && values.description) {
                                                                 setStep(2)
-                                                                handleNext();
+                                                                handleNext()
                                                             }
-                                                        }
-                                                        } > Next </button>
+                                                        }}>Next <KeyboardArrowRight style={{ paddingLeft: '5px' }} /> </Button>
                                                     </div>
                                                 </Box>
                                             }
                                             {
                                                 (step == 2) &&
                                                 <Box>
-                                                    <div style={{ paddingTop: '15px' }}>
-                                                        <label> step2 Email : </label>
-                                                    </div >
-                                                    <Field style={{ width: '100%' }} name="secondEmail" />
-                                                    {touched.secondEmail && errors.secondEmail && <div style={{ color: 'red' }}>{errors.secondEmail}</div>}
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            Mint your token
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            Define the token details and distribute tokens to a core team and DAO treasury. For more on token minting best practices,
+                                                        </Typography>
+                                                    </Box>
+
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            Name
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            The full name of the token. Example: Uniswap
+                                                        </Typography>
+                                                        <Field
+                                                            name="name"
+                                                            className='form-field'
+                                                            value={values.name}
+                                                            onChange={handleChange}
+                                                            placeholder='Name...'
+                                                        />
+                                                        <ErrorMessage name="name">{msg => <div className='error'>{msg}</div>}</ErrorMessage>
+                                                    </Box>
+
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            Symbol
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            The abbreviation of the token. Example: UNI
+                                                        </Typography>
+                                                        <Field
+                                                            name="symbol"
+                                                            className='form-field'
+                                                            value={values.symbol}
+                                                            onChange={handleChange}
+                                                            placeholder='Symbol...'
+                                                        />
+                                                        <ErrorMessage name="symbol">{msg => <div className='error'>{msg}</div>}</ErrorMessage>
+                                                    </Box>
+
+
+
                                                     <div style={{ marginTop: '10px' }}>
                                                         <button onClick={() => {
                                                             setStep(1)

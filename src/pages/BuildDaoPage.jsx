@@ -38,6 +38,9 @@ const BoxWrapper = styled(Box)({
         fontWeight: 500,
         borderRadius: '12px',
         padding: '10px 18px'
+    },
+    '.launch-btn:hover': {
+        background: '#f5274e',
     }
 })
 
@@ -95,7 +98,7 @@ const BuildDaoPage = () => {
             }
             {
                 !hide &&
-                <Box sx={{ marginTop: '7.2rem', fontSize: '50px' }}>
+                <Box sx={{ paddingTop: '5.1rem', fontSize: '50px' }}>
                     <Stepper />
                 </Box>
             }
