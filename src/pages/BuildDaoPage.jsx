@@ -7,7 +7,7 @@ import step1 from './../assets/svgs/step1.png';
 import step2 from './../assets/svgs/step2.png';
 import step3 from './../assets/svgs/step3.png';
 import step4 from './../assets/svgs/step4.png';
-import Stepper from '../components/Stepper';
+import StepperForm from '../components/StepperForm';
 
 
 
@@ -97,9 +97,10 @@ const BuildDaoPage = () => {
                 </BoxWrapper>
             }
             {
-                !hide &&
+                (!hide) &&
                 <Box sx={{ paddingTop: '5.1rem', fontSize: '50px' }}>
-                    <Stepper />
+                    {/* <Stepper /> */}
+                    <StepperForm />
                 </Box>
             }
         </React.Fragment>
