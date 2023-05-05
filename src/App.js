@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import DaoHome from './pages/DaoHome';
 import BuildDaoPage from './pages/BuildDaoPage';
+import ProposalForm from './pages/ProposalForm';
+import VotingPage from './pages/VotingPage';
 
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
           <Route exact path='/dashboard' element={<Dashboard />} />
           <Route exact path='/dao-homepage' element={<DaoHome />} />
           <Route exact path='/create-dao' element={<BuildDaoPage />} />
+          <Route exact path='/proposal' element={<ProposalForm />} />
+          <Route exact path='/vote' element={<VotingPage />} />
         </Routes>
       </Router>
       {/* <Setup /> */}

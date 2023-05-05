@@ -198,7 +198,6 @@ const StepperForm = () => {
                 <Box sx={{ p: 2 }}>
                     <Card className='progress-card' variant="outlined">
                         <Box className='parent-progress'>
-
                             <Typography className='progress-title'>
                                 Create your DAO
                             </Typography>

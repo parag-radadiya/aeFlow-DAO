@@ -1,6 +1,7 @@
 import React from 'react'
 import { styled, Box, Card, Typography, Button } from '@mui/material';
 import creater from './../assets/images/creater1.png'
+import { useNavigate } from 'react-router-dom';
 
 const BoxWrapper = styled(Box)({
     '.parent-img': {
@@ -31,10 +32,16 @@ const BoxWrapper = styled(Box)({
         borderRadius: '12px',
         padding: '6px 15px'
     },
+    '.creater-btn:hover': {
+        background: '#f5274e',
+    },
 });
 
 
 const Creater = ({ title, description, btnTitle, image }) => {
+
+    const navigate = useNavigate()
+
     return (
         <React.Fragment>
             <BoxWrapper>
@@ -50,10 +57,11 @@ const Creater = ({ title, description, btnTitle, image }) => {
                             {description} <span style={{ color: '#f5274e' }}>proposal guide.</span>
                         </Typography>
                         <Box sx={{ textAlign: 'center', paddingTop: '25px' }}>
-                            <Button variant="contained" className='creater-btn' disableElevation>{btnTitle} </Button>
+                            <Button variant="contained" className='creater-btn'
+                                disableElevation
+                                onClick={() => navigate('/proposal')}
+                            >{btnTitle} </Button>
                         </Box>
-
-
                     </Box>
                 </Card>
 
