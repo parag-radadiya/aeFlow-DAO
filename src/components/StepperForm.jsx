@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { ErrorMessage, Field, FieldArray, Form, Formik } from 'formik';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -73,6 +74,12 @@ const BoxWrapper = styled(Box)({
         padding: '13px 16px',
         background: '#fff'
     },
+    '.address-field': {
+        border: '2px solid #E4E7EB',
+        borderRadius: '12px',
+        padding: '13px 16px',
+        background: '#fff'
+    },
     '.form-field::placeholder': {
         fontSize: '16px',
         color: '#A6ACB7'
@@ -116,8 +123,24 @@ const BoxWrapper = styled(Box)({
     '.eligible-radio': {
         position: 'absolute', top: '10px', right: '12px'
     },
+    '.vote-radio': {
+        position: 'absolute', top: '15px', right: '12px', width: '20px'
+    },
     '.parent-token-holder': {
         border: '2px solid #0075FF', borderRadius: '12px', padding: '12px 16px', marginTop: '10px', position: 'relative'
+    },
+    '.allocation-btn': {
+        background: '#E4E7EB',
+        color: '#566470', border: '1px solid #566470',
+        borderRadius: '12px',
+        padding: '10px 15px'
+    },
+    '.time': {
+        fontSize: '14px'
+    },
+    '.parent-duration': {
+        border: '1px solid #f5274e', display: 'flex', gap: '10px', marginTop: '10px',
+        padding: '24px', background: '#fff', borderRadius: '12px'
     }
 })
 
@@ -126,12 +149,16 @@ const StepperForm = () => {
 
 
     const [activeStep, setActiveStep] = React.useState(1);
+    const [supportStep, setSupportstep] = React.useState(1);
+
     //  for count the carecter --> 
     const [characterCount, setCaracterCount] = React.useState(0);
     const [subdomain, setSubdomain] = React.useState(0);
     // for stepper state ---->
     const [step, setStep] = React.useState(1);
     const [file, setFile] = React.useState(0);
+
+    const navigate = useNavigate();
 
     // count the minimum token 
     const [countToken, setCountToken] = React.useState(0);
@@ -146,6 +173,13 @@ const StepperForm = () => {
 
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+    const supportNext = () => {
+        setSupportstep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const supportBack = () => {
+        setSupportstep((prevActiveStep) => prevActiveStep - 1);
     };
 
     const DisplayingErrorMessagesSchema = Yup.object().shape({
@@ -170,12 +204,12 @@ const StepperForm = () => {
                             </Typography>
 
                             <Typography sx={{ color: 'grey' }}>
-                                Step {activeStep} of 4
+                                Step {activeStep} of 3
                             </Typography>
                         </Box>
                         <MobileStepper
                             variant="progress"
-                            steps={5}
+                            steps={4}
                             position="static"
                             activeStep={activeStep}
                         />
@@ -201,11 +235,22 @@ const StepperForm = () => {
                                 </Typography>
                             </Box>
                         }
+                        {
+                            (step == 3) &&
+                            <Box>
+                                <Typography className='progressbar-main'>
+                                    Select governance settings
+                                </Typography>
+                                <Typography className='pregress-desc'>
+                                    These settings determine how voting works in your DAO. Read best practices for governance settings in this guide.
+                                </Typography>
+                            </Box>
+                        }
 
                     </Card>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <Card elevation={0} sx={{
-                            width: '650px', border: '1px dotted green',
+                            width: '650px',
                             padding: '20px', marginTop: '20px', background: '#F5F7FA'
                         }}>
                             <Formik
@@ -213,7 +258,7 @@ const StepperForm = () => {
                                     daoname: "",
                                     subdomain: "",
                                     description: "",
-                                    secondEmail: '', name: '', symbol: '', picked: '',
+                                    secondEmail: '', name: '', symbol: '', picked: '', execution: '', vote: '',
                                     detail: [
                                         {
                                             name: "",
@@ -458,13 +503,22 @@ const StepperForm = () => {
                                                     </Box>
                                                     {/* ---------------------  */}
 
-                                                    <div >
+                                                    <Box className='main-field'>
+                                                        <Typography className='field-title'>
+                                                            Distribute tokens
+                                                        </Typography>
+                                                        <Typography className='field-subTitle'>
+                                                            Add the wallets you'd like to distribute tokens to. If you need help distributing tokens, .
+                                                        </Typography>
+                                                    </Box>
+
+                                                    <div>
                                                         <FieldArray name="distribute">
                                                             {({ insert, remove, push }) => (
                                                                 <div>
                                                                     <Box className='main-field' sx={{ background: '#fff', marginTop: '18px', padding: '16px 13px', borderRadius: '10px' }}>
                                                                         <div>
-                                                                            <Box sx={{ display: 'flex', gap: '130px' }}>
+                                                                            <Box sx={{ display: 'flex', gap: '160px' }}>
                                                                                 <div className='field-title'>Address</div>
                                                                                 <div className='field-title'>Tokens</div>
                                                                                 <div className='field-title'>Allocation</div>
@@ -473,10 +527,10 @@ const StepperForm = () => {
 
                                                                             {values.distribute.length > 0 &&
                                                                                 values?.distribute?.map((distribute, index) => (
-                                                                                    <div key={index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5%' }}>
+                                                                                    <div key={index} style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                                                                                         <div >
                                                                                             <Field
-                                                                                                className='form-field'
+                                                                                                className='address-field'
                                                                                                 name={`distribute.${index}.address`}
                                                                                                 placeholder="Token"
                                                                                                 type="text"
@@ -484,16 +538,25 @@ const StepperForm = () => {
                                                                                                 onChange={handleChange}
                                                                                             />
                                                                                         </div>
-                                                                                        <div >
-                                                                                            <Field
-                                                                                                className='form-field'
-                                                                                                name={`detail.${index}.link`}
-                                                                                                placeholder="https://"
-                                                                                                type="text"
-                                                                                                value={values.detail[index]?.link}
-                                                                                                onChange={handleChange}
-                                                                                            />
-                                                                                        </div>
+                                                                                        <Box sx={{ border: '2px solid #E4E7EB', width: '30%', marginTop: '22px', borderRadius: '12px', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                                            <button variant='contained' onClick={() => setCountToken(countToken + 1)}
+                                                                                                style={{ border: 'none', background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 12px' }}>
+                                                                                                +
+                                                                                            </button>
+                                                                                            <Typography>
+                                                                                                {countToken}
+                                                                                            </Typography>
+                                                                                            <button variant='contained' onClick={() => setCountToken(countToken - 1)}
+                                                                                                style={{ background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 13px', border: 'none' }}>
+                                                                                                -
+                                                                                            </button>
+                                                                                        </Box>
+                                                                                        <Box>
+                                                                                            <Button variant='contained' className='allocation-btn' >
+                                                                                                100%
+                                                                                            </Button>
+                                                                                        </Box>
+
                                                                                         <div style={{ display: 'flex', alignItems: 'end', marginBottom: '1%' }}>
                                                                                             <div
                                                                                                 onClick={() => remove(index)}
@@ -512,7 +575,7 @@ const StepperForm = () => {
 
                                                                             }}
                                                                         >
-                                                                            Add Link
+                                                                            Add Wallet
                                                                         </Button>
                                                                     </div>
 
@@ -520,16 +583,6 @@ const StepperForm = () => {
                                                             )}
                                                         </FieldArray>
                                                     </div>
-
-                                                    <Box className='main-field'>
-                                                        <Typography className='field-title'>
-                                                            Distribute tokens
-                                                        </Typography>
-                                                        <Typography className='field-subTitle'>
-                                                            Add the wallets you'd like to distribute tokens to. If you need help distributing tokens.
-                                                        </Typography>
-
-                                                    </Box>
 
                                                     <Box className='main-field'>
                                                         <Typography className='field-title'>
@@ -605,13 +658,191 @@ const StepperForm = () => {
                                             }
                                             {
                                                 (step == 3) && (
-                                                    <Box>
-                                                        this is the third form
-                                                        <Button className='back-step' variant='contained' onClick={() => {
-                                                            setStep(2)
-                                                            handleBack()
-                                                        }
-                                                        }> back </Button>
+                                                    <Box >
+                                                        <Box className='main-field'>
+                                                            <Typography className='field-title'>
+                                                                Support threshold
+                                                            </Typography>
+                                                            <Typography className='field-subTitle'>
+                                                                Support threshold is the percentage of tokens or that are required to vote “Yes” for a proposal to be approved, calculated based on total tokens that voted.
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box sx={{ border: '1px solid red', borderRadius: '12px', background: '#fff', p: 3, mt: 1 }}>
+                                                            <Box sx={{ border: '2px solid #E4E7EB', width: '100%', marginTop: '5px', borderRadius: '12px', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                <button variant='contained' onClick={supportNext}
+                                                                    style={{ border: 'none', background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 12px' }}>
+                                                                    +
+                                                                </button>
+                                                                <Typography>
+                                                                    {supportStep}%
+                                                                </Typography>
+                                                                <button variant='contained' onClick={supportBack}
+                                                                    style={{ background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 13px', border: 'none' }}>
+                                                                    -
+                                                                </button>
+                                                            </Box>
+                                                            <MobileStepper
+                                                                variant="progress"
+                                                                steps={100}
+                                                                position="static"
+                                                                activeStep={supportStep}
+                                                            />
+                                                        </Box>
+                                                        <Box className='main-field'>
+                                                            <Typography className='field-title'>
+                                                                Minimum participation
+                                                            </Typography>
+                                                            <Typography className='field-subTitle'>
+                                                                Minimum participation is the percentage of the token supply that must vote on a proposal for the vote to be valid. Make sure you set this at a low level that your DAO can meet, so you don't lock your voting process.
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box sx={{ border: '1px solid red', borderRadius: '12px', background: '#fff', p: 3, mt: 1 }}>
+                                                            <Box sx={{ border: '2px solid #E4E7EB', width: '100%', marginTop: '5px', borderRadius: '12px', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                <button variant='contained' onClick={supportNext}
+                                                                    style={{ border: 'none', background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 12px' }}>
+                                                                    +
+                                                                </button>
+                                                                <Typography>
+                                                                    {supportStep}%
+                                                                </Typography>
+                                                                <button variant='contained' onClick={supportBack}
+                                                                    style={{ background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 13px', border: 'none' }}>
+                                                                    -
+                                                                </button>
+                                                            </Box>
+                                                            <Typography sx={{ display: 'flex', justifyContent: 'flex-end', fontSize: '14px', marginTop: '5px' }}>1 / 1 tokens</Typography>
+                                                            <MobileStepper
+                                                                variant="progress"
+                                                                steps={100}
+                                                                position="static"
+                                                                activeStep={supportStep}
+                                                            />
+                                                        </Box>
+
+
+                                                        <Box className='main-field'>
+                                                            <Typography className='field-title'>
+                                                                Minimum duration
+                                                            </Typography>
+                                                            <Typography className='field-subTitle'>
+                                                                Minimum duration is the shortest length of time a proposal can be open for voting. You can extend the duration for each proposal but not shorten it.
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box className='parent-duration' >
+                                                            <Box sx={{ width: '100%' }}>
+                                                                <Typography className='time'>
+                                                                    Minutes
+                                                                </Typography>
+                                                                <Box sx={{ border: '2px solid #E4E7EB', marginTop: '5px', borderRadius: '12px', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                    <button variant='contained' onClick={() => setCountToken(countToken + 1)}
+                                                                        style={{ border: 'none', background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 12px' }}>
+                                                                        +
+                                                                    </button>
+                                                                    <Typography>
+                                                                        {countToken}
+                                                                    </Typography>
+                                                                    <button variant='contained' onClick={() => setCountToken(countToken - 1)}
+                                                                        style={{ background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 13px', border: 'none' }}>
+                                                                        -
+                                                                    </button>
+                                                                </Box>
+
+                                                            </Box>
+                                                            <Box sx={{ width: '100%' }}>
+                                                                <Typography className='time'>
+                                                                    Hours
+                                                                </Typography>
+                                                                <Box sx={{ border: '2px solid #E4E7EB', marginTop: '5px', borderRadius: '12px', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                    <button variant='contained' onClick={() => setCountToken(countToken + 1)}
+                                                                        style={{ border: 'none', background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 12px' }}>
+                                                                        +
+                                                                    </button>
+                                                                    <Typography>
+                                                                        {countToken}
+                                                                    </Typography>
+                                                                    <button variant='contained' onClick={() => setCountToken(countToken - 1)}
+                                                                        style={{ background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 13px', border: 'none' }}>
+                                                                        -
+                                                                    </button>
+                                                                </Box>
+
+                                                            </Box>
+                                                            <Box sx={{ width: '100%' }}>
+                                                                <Typography className='time'>
+                                                                    Days
+                                                                </Typography>
+                                                                <Box sx={{ border: '2px solid #E4E7EB', marginTop: '5px', borderRadius: '12px', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                    <button variant='contained' onClick={() => setCountToken(countToken + 1)}
+                                                                        style={{ border: 'none', background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 12px' }}>
+                                                                        +
+                                                                    </button>
+                                                                    <Typography>
+                                                                        {countToken}
+                                                                    </Typography>
+                                                                    <button variant='contained' onClick={() => setCountToken(countToken - 1)}
+                                                                        style={{ background: '#F5F7FA', color: '#4D5863', borderRadius: '12px', fontSize: '20px', padding: '5px 13px', border: 'none' }}>
+                                                                        -
+                                                                    </button>
+                                                                </Box>
+
+                                                            </Box>
+
+                                                        </Box>
+                                                        <Box className='main-field'>
+                                                            <Typography className='field-title'>
+                                                                Early execution
+                                                            </Typography>
+                                                            <Typography className='field-subTitle'>
+                                                                Allow proposal execution before the vote ends if the requirements are met and the vote outcome cannot be changed by more voters participating.
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box sx={{ display: 'flex', gap: '15px' }}>
+                                                            <Box className='parent-token-holder' sx={{ width: '100%' }}>
+                                                                <Typography className='field-title'>
+                                                                    No
+                                                                </Typography>
+                                                                <Field className='vote-radio' type="radio" name="execution" value="execution1" />
+                                                            </Box>
+                                                            <Box className='parent-token-holder' sx={{ width: '100%' }}>
+                                                                <Typography className='field-title'>
+                                                                    Yes
+                                                                </Typography>
+                                                                <Field className='vote-radio' type="radio" name="execution" value="execution2" />
+                                                            </Box>
+                                                        </Box>
+
+                                                        <Box className='main-field'>
+                                                            <Typography className='field-title'>
+                                                                Vote change
+                                                            </Typography>
+                                                            <Typography className='field-subTitle'>
+                                                                This setting allows voters to change their vote during the voting period. If you enabled early execution, this setting is automatically turned off.
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box sx={{ display: 'flex', gap: '15px' }}>
+                                                            <Box className='parent-token-holder' sx={{ width: '100%' }}>
+                                                                <Typography className='field-title'>
+                                                                    No
+                                                                </Typography>
+                                                                <Field className='vote-radio' type="radio" name="vote" value="vote1" />
+                                                            </Box>
+                                                            <Box className='parent-token-holder' sx={{ width: '100%' }}>
+                                                                <Typography className='field-title'>
+                                                                    Yes
+                                                                </Typography>
+                                                                <Field className='vote-radio' type="radio" name="vote" value="vote2" />
+                                                            </Box>
+                                                        </Box>
+                                                        <Box sx={{ display: 'flex', marginTop: '25px', justifyContent: 'space-between' }}>
+                                                            <Button className='back-step' variant='contained' onClick={() => {
+                                                                setStep(2)
+                                                                handleBack()
+                                                            }
+                                                            }> back </Button>
+                                                            <Button className='back-step' variant='contained'
+                                                                onClick={() => navigate('/dashboard')}
+                                                            > next </Button>
+                                                        </Box>
 
                                                     </Box>
                                                 )
@@ -624,8 +855,8 @@ const StepperForm = () => {
                             </Formik>
                         </Card>
                     </div>
-                </Box>
-            </BoxWrapper>
+                </Box >
+            </BoxWrapper >
 
         </>
     )
