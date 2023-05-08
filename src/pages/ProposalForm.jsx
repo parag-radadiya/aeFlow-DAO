@@ -68,8 +68,7 @@ const BoxWrapper = styled(Box)({
     '.flow-select': {
         width: '106%',
         border: '2px solid #E4E7EB',
-        borderRadius: '12px',
-        marginTop: '15px',
+        // borderRadius: '12px',
         // padding: '1px 16px',
         background: '#fff'
     },
@@ -111,6 +110,9 @@ const ProposalForm = () => {
                                 <Form>
                                     <Box sx={{ p: 2 }}>
                                         <Box>
+                                            <Typography sx={{ fontSize: '45px', textAlign: 'center', pb: 5, fontWeight: 700 }}>
+                                                Proposal Form
+                                            </Typography>
                                             <Typography className='field-title'>
                                                 Proposal Title
                                             </Typography>
@@ -155,20 +157,23 @@ const ProposalForm = () => {
                                             <Typography className='field-title'>
                                                 Condition Flow
                                             </Typography>
-                                            <Select
-                                                className='flow-select'
-                                                name='flow'
-                                                value={values.flow}
-                                                label="Flow"
-                                                onChange={handleChange}
-                                            >
-                                                <MenuItem value="">
-                                                    {/* <em>None</em> */}
-                                                </MenuItem>
-                                                <MenuItem value={10}>Ten</MenuItem>
-                                                <MenuItem value={20}>Twenty</MenuItem>
-                                                <MenuItem value={30}>Thirty</MenuItem>
-                                            </Select>
+                                            <FormControl fullWidth sx={{ marginTop: '15px' }}>
+                                                <InputLabel id="demo-simple-select-label"> flow </InputLabel>
+                                                <Select
+                                                    className='flow-select'
+                                                    name='flow'
+                                                    value={values.flow}
+                                                    label="Flow"
+                                                    onChange={handleChange}
+                                                >
+                                                    <MenuItem value="">
+                                                        {/* <em>None</em> */}
+                                                    </MenuItem>
+                                                    <MenuItem value={10}> flow 1 </MenuItem>
+                                                    <MenuItem value={20}> flow 2</MenuItem>
+                                                    <MenuItem value={30}> flow 3 </MenuItem>
+                                                </Select>
+                                            </FormControl>
                                             <ErrorMessage name="flow">{msg => <div className='error'>{msg}</div>}</ErrorMessage>
                                         </Box>
 
