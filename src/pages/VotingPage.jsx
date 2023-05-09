@@ -1,16 +1,112 @@
 import React, { useState } from 'react';
-import { Box, Button, Card, Grid, Typography, styled } from '@mui/material';
+import { Box, Button, Card, Grid, TextField, Typography } from '@mui/material';
 import resource from './../assets/images/resource.png';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Status from '../components/Status';
 import action from './../assets/images/action.png';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
+// import Tab from '@mui/material/Tab';
+// import TabContext from '@mui/lab/TabContext';
+// import TabList from '@mui/lab/TabList';
+// import TabPanel from '@mui/lab/TabPanel';
+import { styled } from '@mui/system';
+import Tabs from '@mui/base/Tabs';
+import TabsList from '@mui/base/TabsList';
+import TabPanel from '@mui/base/TabPanel';
+import { buttonClasses } from '@mui/base/Button';
+import Tab, { tabClasses } from '@mui/base/Tab';
 import MobileStepper from '@mui/material/MobileStepper';
-import { FcInfo } from 'react-icons/fc'
+import { FcInfo } from 'react-icons/fc';
+import VotingTable from '../components/VotingTable';
+
+
+
+const blue = {
+    50: '#F0F7FF',
+    100: '#C2E0FF',
+    200: '#80BFFF',
+    300: '#66B2FF',
+    400: '#3399FF',
+    500: '#007FFF',
+    600: '#0072E5',
+    700: '#0059B2',
+    800: '#004C99',
+    900: '#003A75',
+};
+
+const grey = {
+    50: '#f6f8fa',
+    100: '#eaeef2',
+    200: '#d0d7de',
+    300: '#afb8c1',
+    400: '#8c959f',
+    500: '#6e7781',
+    600: '#57606a',
+    700: '#424a53',
+    800: '#32383f',
+    900: '#24292f',
+};
+
+const StyledTab = styled(Tab)`
+    font-family: IBM Plex Sans, sans-serif;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: transparent;
+    width: 100%;
+    padding: 10px 12px;
+    margin: 6px 6px;
+    border: none;
+    border-radius: 7px;
+    display: flex;
+    justify-content: center;
+  
+    &:hover {
+      background-color: #fff;
+      color:#f5274e;
+    }
+  
+    &:focus {
+      color: #fff;
+      outline: 3px solid #;
+    }
+  
+    &.${tabClasses.selected} {
+      background-color: #fff;
+      color:#f5274e;
+    }
+  
+    &.${buttonClasses.disabled} {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  `;
+
+const StyledTabPanel = styled(TabPanel)(
+    ({ theme }) => `
+    font-family: IBM Plex Sans, sans-serif;
+    font-size: 0.875rem;
+    padding: 25px;
+    background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+    border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
+    border-radius: 12px;
+    `,
+);
+
+const StyledTabsList = styled(TabsList)(
+    ({ theme }) => `
+    min-width: 400px;
+    background-color: #f5274e ;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: space-between;
+    box-shadow: 0px 4px 30px ${theme.palette.mode === 'dark' ? grey[900] : grey[200]};
+    `,
+);
 
 
 
@@ -104,19 +200,32 @@ const BoxWrapper = styled(Box)({
     },
     '.parent-tabs': {
         borderBottom: 1, borderColor: 'divider',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+        display: 'flex', justifyContent: 'space-between'
     },
     '.parent-over': {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '25px'
     },
     '.over-btn': {
-        background: '#C4D7FF',
-        color: '#628CFE',
+        background: '#ffa2a2',
+        color: '#575757',
         textTransform: 'none', fontWeight: 700, fontSize: '16px',
         borderRadius: '12px'
     },
     '.praposal-title': {
         color: '#225C8A', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '7px'
+    },
+    '.main-title': {
+        fontSize: '20px',
+        fontWeight: 700,
+        paddingTop: '10px'
+    },
+    '.decision-title': {
+        fontSize: '16px', fontWeight: 500, color: '#63707B',
+        padding: '5px 0px'
+    },
+    '.decision-details': {
+        fontSize: '16px', fontWeight: 700, color: '#323f4B',
+        padding: '5px 0px'
     }
 
 })
@@ -171,23 +280,21 @@ const VotingPage = () => {
 
                         <Card elevation={0} className='action-card'>
 
-                            <Box sx={{ width: '100%', typography: 'body1' }}>
-                                <TabContext value={value}>
-                                    <Box className='parent-tabs' sx={{
 
-                                    }}>
+                            <Box>
+                                <Tabs defaultValue={0}>
+                                    <Box className='parent-tabs'>
                                         <Typography className='status-title'>
                                             Voting
                                         </Typography>
-                                        <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                            <Tab className='tab-title' label="Breakdown" value="1" />
-                                            <Tab className='tab-title' label="Voters" value="2" />
-                                            <Tab className='tab-title' label="Info" value="3" />
-                                        </TabList>
+                                        <StyledTabsList>
+                                            <StyledTab value={0}>Breakdown</StyledTab>
+                                            <StyledTab value={1}>Voters</StyledTab>
+                                            <StyledTab value={2}>Info</StyledTab>
+                                        </StyledTabsList>
                                     </Box>
-                                    <TabPanel value="1">
+                                    <StyledTabPanel value={0}>
                                         <Box>
-
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <Typography sx={{ width: '70%', color: '#f5274e', fontWeight: 700 }}>
                                                     Yes
@@ -206,8 +313,7 @@ const VotingPage = () => {
                                                 activeStep={1}
                                             />
                                         </Box>
-
-                                        <Box sx={{ paddingTop: '30px' }}>
+                                        <Box sx={{ paddingTop: '35px' }}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <Typography sx={{ width: '70%', color: '#f5274e', fontWeight: 700 }}>
                                                     No
@@ -226,7 +332,8 @@ const VotingPage = () => {
                                                 activeStep={1}
                                             />
                                         </Box>
-                                        <Box sx={{ paddingTop: '30px' }}>
+
+                                        <Box sx={{ paddingTop: '35px' }}>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <Typography sx={{ width: '70%', color: '#f5274e', fontWeight: 700 }}>
                                                     Abstain
@@ -245,6 +352,7 @@ const VotingPage = () => {
                                                 activeStep={1}
                                             />
                                         </Box>
+
                                         <Box className='parent-over'>
                                             <Button variant='contained' className='over-btn'>
                                                 Vote Over
@@ -254,9 +362,16 @@ const VotingPage = () => {
                                             </Typography>
                                         </Box>
 
+                                    </StyledTabPanel>
+                                    <StyledTabPanel value={1}>
 
-                                    </TabPanel>
-                                    <TabPanel value="2">
+                                        {/* test components */}
+                                        <TextField placeholder='Wallet,ENS, or  email'
+                                            fullWidth id="fullWidth" />
+                                        <Box sx={{ paddingTop: '20px' }}>
+                                            <VotingTable />
+                                        </Box>
+
                                         <Box className='parent-over'>
                                             <Button variant='contained' className='over-btn'>
                                                 Vote Over
@@ -265,8 +380,91 @@ const VotingPage = () => {
                                                 <FcInfo />   Proposal passed
                                             </Typography>
                                         </Box>
-                                    </TabPanel>
-                                    <TabPanel value="3">
+
+                                    </StyledTabPanel>
+                                    <StyledTabPanel value={2}>
+                                        <Typography className='main-title'>
+                                            Rules of decision
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4E7EB', paddingBottom: '15px' }}>
+                                            <Box>
+                                                <Typography className='decision-title'>
+                                                    Options
+                                                </Typography>
+                                                <Typography className='decision-title'>
+                                                    Strategy
+                                                </Typography>
+                                                <Typography className='decision-title'>
+                                                    Support threshold
+                                                </Typography>
+                                                <Typography className='decision-title'>
+                                                    Minimum participation (Quorum)
+                                                </Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography className='decision-details'>
+                                                    Yes, no, or abstain
+                                                </Typography>
+                                                <Typography className='decision-details'>
+                                                    1 token → 1 vote
+                                                </Typography>
+                                                <Typography className='decision-details'>
+                                            > 65%
+                                                </Typography>
+                                                <Typography className='decision-details'>
+                                                    ≥ 0 of 1M LER (0%)
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+
+                                        <Typography className='main-title'>
+                                            Voting activity
+                                        </Typography>
+
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4E7EB', padding: '15px 0px' }}>
+                                            <Box>
+                                                <Typography className='decision-title'>
+                                                    Current participation
+                                                </Typography>
+                                                <Typography className='decision-title'>
+                                                    Unique voters
+                                                </Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography className='decision-details'>
+                                                    1M of 1M LER (100%)
+                                                </Typography>
+                                                <Typography className='decision-details'>
+                                                    1
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+
+
+
+
+
+                                        <Typography className='main-title'>
+                                            Duration
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4E7EB', padding: '15px 0px' }}>
+                                            <Box>
+                                                <Typography className='decision-title'>
+                                                    Start
+                                                </Typography>
+                                                <Typography className='decision-title'>
+                                                    End
+                                                </Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography className='decision-details'>
+                                                    2023/05/01 10:51 PM UTC+5:30
+                                                </Typography>
+                                                <Typography className='decision-details'>
+                                                    2023/05/02 11:01 PM UTC+5:30
+                                                </Typography>
+                                            </Box>
+                                        </Box>
                                         <Box className='parent-over'>
                                             <Button variant='contained' className='over-btn'>
                                                 Vote Over
@@ -275,10 +473,13 @@ const VotingPage = () => {
                                                 <FcInfo />   Proposal passed
                                             </Typography>
                                         </Box>
-                                    </TabPanel>
-                                </TabContext>
-
+                                    </StyledTabPanel>
+                                </Tabs>
                             </Box>
+
+
+
+
                         </Card>
                         <Card elevation={0} className='action-card'>
                             <Typography className='status-title'>
