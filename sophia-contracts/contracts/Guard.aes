@@ -1,0 +1,171 @@
+@compiler >= 6
+
+include "Option.aes"
+include "./TokenContract.aes"
+include "./SmartDao.aes"
+include "./GuardInterface.aes"
+
+main contract Guard =
+  record validator = {
+    stakedAmount: int,
+    unstakeLockTime: int,
+    isValidator: bool }
+
+  record voteBox = {
+    validator: address,
+    forVotes: int,
+    againstVotes: int,
+    votes: map(address, bool) }
+
+  record state = {
+    daoCounter: int,
+    validatorCounter: int,
+    admin: address,
+    stakeAmount: int,
+    validators: map(address, validator),
+    validatorsIndex: map(int, address),
+    blacklist: map(address, bool),
+    blacklistVoting: map(address, voteBox),
+    daoList: map(int, SmartDao),
+    roundRobinIndex: int }
+
+  type distribution = map(address, int)
+
+  datatype event 
+    = ExecuteProposal(address, address, string, int)
+
+  entrypoint init(stakeAmount: int) : state =
+    require(stakeAmount > 0, "Stake amount must be greater than zero")
+    let admin = Call.caller
+    {
+      daoCounter = 0,
+      validatorCounter = 0,
+      admin = admin,
+      stakeAmount = stakeAmount,
+      validators = {},
+      validatorsIndex = {},
+      blacklist = {},
+      blacklistVoting = {},
+      daoList = {},
+      roundRobinIndex = 0 }
+
+  payable stateful entrypoint join() =
+    let validator = Call.caller
+    require(!isBlackList(validator), "Validator is blacklisted")
+    require(!isValidator(validator), "Validator is already part of the system")
+    require(Call.value >= state.stakeAmount, "Insufficient staked amount")
+
+    let updatedValidator = {
+        stakedAmount = Call.value,
+        unstakeLockTime = 0,
+        isValidator = true }
+    let counter = state.validatorCounter
+    put(state{ validatorCounter = counter + 1, validatorsIndex[counter] = validator, validators[validator] = updatedValidator })
+
+  stateful entrypoint setStakeAmount(amount: int) =
+    require(Call.caller == state.admin, "Only the admin can set the stake amount")
+    require(amount > 0, "Stake amount must be greater than zero")
+
+    put(state{stakeAmount = amount})
+
+  stateful entrypoint createDao(daoName: string, daoSymbol: string, metaData: string, tokenDistribution: distribution, totalSupply: int, votingPercentage: int) : SmartDao =
+    let daoCounter = state.daoCounter
+    let daoToken = Chain.create(daoName, daoSymbol, totalSupply, tokenDistribution) : TokenContract
+    let guard = Address.to_contract(Contract.address) : GuardInterface
+    let dao = Chain.create(daoCounter,  daoToken, votingPercentage, metaData, guard) : SmartDao
+    put(state{ daoCounter =  daoCounter + 1, daoList[daoCounter] = dao })
+    dao
+
+  stateful entrypoint increaseLock(validator: address, time: int, daoId: int) = 
+    require(isValidator(validator), "address is not an validator!")
+    require(isDaoContract(daoId), "Only dao contract can call this!")
+    let validator_ = state.validators[validator]
+    if (validator_.unstakeLockTime < time)
+      put(state{ validators[validator].unstakeLockTime = time })
+
+  stateful entrypoint executeProposal(daoId: int, flowId: string, proposalId: int) = 
+    let validatorId = nextId()
+    Chain.event(ExecuteProposal(state.validatorsIndex[validatorId], state.daoList[daoId].address, flowId, proposalId))
+
+  stateful entrypoint createVotingProposal(validator: address) =
+    require(isAdmin(Call.caller) || isValidator(Call.caller), "Only admin or validators can create a voting proposal")
+    require(isValidator(validator), "Validator does not exist")
+    require(!isProposalExsist(validator), "Proposal already exsist!")
+    require(!isBlackList(validator), "Validator is already blacklisted")
+    let vb = {
+      validator = validator,
+      forVotes = 0,
+      againstVotes = 0,
+      votes = {} }
+    put(state{ blacklistVoting[validator] = vb })
+
+  stateful entrypoint voteToBlacklist(validator: address, vote: bool) =
+    require(isValidator(Call.caller), "Only validator can call!")
+    require(isValidator(validator), "Validator does not exist")
+    require(!isBlackList(validator), "Validator is already blacklisted")
+    require(!isProposalExsist(validator), "Proposal already exsist!")
+    require(!isVoted(validator, Call.caller), "You already voted!")
+    let voteBox = state.blacklistVoting[validator]
+    let forVotesPer = (voteBox.forVotes + 1) * 100 / (state.validatorCounter-1)
+    let againstVotesPer = (voteBox.againstVotes + 1) * 100 / (state.validatorCounter-1)
+    if (vote)
+      if (forVotesPer > 50)
+        put(state{ validators[validator].isValidator = false, blacklist[validator] = true })
+      put(state{ blacklistVoting[validator].votes[Call.caller] = vote, blacklistVoting[validator].forVotes = voteBox.forVotes + 1 })
+    else
+      if (againstVotesPer > 50)
+        put(state{ blacklistVoting = Map.delete(validator, state.blacklistVoting) })
+      else
+        put(state{ blacklistVoting[validator].votes[Call.caller] = vote, blacklistVoting[validator].againstVotes = voteBox.againstVotes + 1 })
+
+  stateful entrypoint unstake() =
+    let validator = Call.caller
+    require(isValidator(validator), "Validator does not exist")
+    require(!isProposalExsist(validator), "Blacklist voting going on!")
+    require(!isBlackList(validator), "Validator is blacklisted")
+    require(!isLockingPeriod(validator), "Unstaking is not allowed during lock period")
+
+    let stakedAmount = state.validators[validator].stakedAmount
+    Chain.spend(validator, stakedAmount)
+    put(state{ validators[validator].isValidator = false })
+  
+  entrypoint getDaoList() : map(int, SmartDao) =
+    state.daoList
+
+  entrypoint getblacklistVoting(validator : address) : option(voteBox) =
+    Map.lookup(validator,  state.blacklistVoting)
+
+  function isVoted(validator: address, acc: address) : bool = 
+     Option.is_some(Map.lookup(acc, state.blacklistVoting[validator].votes))
+
+  function isProposalExsist(validator: address) : bool = 
+    Option.is_some(Map.lookup(validator,  state.blacklistVoting))
+
+  function isAdmin(acc: address) : bool =
+    acc == state.admin
+
+  function isLockingPeriod(acc: address) : bool =
+    let unlockTime = state.validators[acc].unstakeLockTime  
+    Chain.block_height < unlockTime
+
+  entrypoint isValidator(acc: address) : bool =
+    Option.is_some(Map.lookup(acc, state.validators)) && state.validators[acc].isValidator
+
+  entrypoint totalValidators() : int =
+    state.validatorCounter - 1
+
+  function isBlackList(acc: address) : bool =
+    Option.is_some(Map.lookup(acc, state.blacklist))
+
+  function isDaoContract(id: int) : bool =
+    let dao = Option.force_msg(Map.lookup(id, state.daoList), "Dao not found")
+    dao.address == Call.caller
+  
+  stateful function nextId() : int =
+    let curId = state.roundRobinIndex
+    let nextId = state.roundRobinIndex + 1
+    if (nextId > (state.validatorCounter - 1))
+      put(state{ roundRobinIndex = 0 })
+    else
+      put(state{ roundRobinIndex = nextId })
+    curId

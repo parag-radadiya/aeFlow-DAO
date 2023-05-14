@@ -1,0 +1,90 @@
+
+@compiler >= 6
+
+include "Option.aes"
+include "List.aes"
+include "Pair.aes"
+
+contract TokenContract =
+
+  record meta_info = {
+    name: string,
+    symbol: string,
+    decimals: int,
+    totalSupply: int }
+  
+
+  record state = {
+    balances: map(address, int),
+    allowances: map(address, map(address, int)),
+    metaInfo: meta_info }
+
+  type distribution = map(address, int)
+  
+
+  stateful entrypoint init(name: string, symbol: string, initialSupply : int, dist : distribution) =
+    require(isValidDistribution(dist), "Invalid distribution!")
+    let balances = distributeTokens(initialSupply, dist)
+    let metaInfo = {
+      name = name,
+      symbol = symbol,
+      decimals = 18,
+      totalSupply = initialSupply }
+    { balances = balances, allowances = {}, metaInfo = metaInfo }
+
+  entrypoint name() : string =
+    state.metaInfo.name
+
+  entrypoint symbol() : string =
+    state.metaInfo.symbol
+
+  entrypoint decimals() : int =
+    state.metaInfo.decimals
+
+  entrypoint totalSupply() : int =
+    state.metaInfo.totalSupply
+
+  entrypoint balance(address : address) : int =
+    state.balances[address]
+  
+  entrypoint getHolders() : map(address, int) =
+    state.balances
+
+  entrypoint allowance(owner: address, spender: address) : option(int) =
+    Map.lookup(spender, state.allowances[owner])
+
+  stateful entrypoint transfer(recipient : address, amount : int) =
+    require(amount > 0, "Invalid transfer amount")
+    let sender = Call.caller
+    let senderBalance = balance(sender)
+    require(senderBalance >= amount, "Insufficient balance")
+    let updatedSenderBalance = senderBalance - amount
+    let updatedRecipientBalance = balance(recipient) + amount
+    put(state{ balances[sender] = updatedSenderBalance, balances[recipient] = updatedRecipientBalance })
+
+  stateful entrypoint approve(spender : address, amount : int) =
+    require(amount >= 0, "Invalid approval amount")
+    put(state{ allowances[Call.caller][spender] = amount })
+
+  stateful entrypoint transferFrom(owner : address, recipient : address, amount : int) =
+    require(amount > 0, "Invalid transfer amount")
+    let spender = Call.caller
+    let ownerBalance = balance(owner)
+    let allowedAmount = Option.default(0, allowance(owner, spender))
+    require(ownerBalance >= amount, "Insufficient balance")
+    require(allowedAmount >= amount, "Insufficient allowance")
+    let updatedOwnerBalance = ownerBalance - amount
+    let updatedRecipientBalance = balance(recipient) + amount
+    let updatedAllowance = allowedAmount - amount
+    put(state{ balances[owner] = updatedOwnerBalance, balances[recipient] = updatedRecipientBalance, allowances[owner][spender] = updatedAllowance })
+
+  private function addressIntToInt(addInt: (address * int)) : int =
+    Pair.snd(addInt)
+
+  private function isValidDistribution(dist : distribution) : bool =
+    let sumPercentages = List.sum(List.map(addressIntToInt, Map.to_list(dist)))
+    sumPercentages == 100
+
+  private function distributeTokens(totalSupply : int, dist : distribution) : map(address, int) =
+    Map.from_list(List.map((x) => (Pair.fst(x), (Pair.snd(x) * totalSupply / 100)),  Map.to_list(dist)))
+

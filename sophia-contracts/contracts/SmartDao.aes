@@ -1,0 +1,214 @@
+@compiler >= 6
+
+include "Option.aes"
+include "./AEX9Interface.aes"
+include "./TokenContract.aes"
+include "./GuardInterface.aes"
+
+payable contract SmartDao =
+
+  record proposal = {
+    id: int,
+    creator: address,
+    description: string,
+    forVotes: int,
+    againstVotes: int,
+    executed: bool,
+    flowId: string,
+    votes: map(address, bool) }
+  
+  record tokenRequest = {
+    id: int,
+    validator: address, 
+    tokenAddress: option(AEX9Interface), 
+    amount: int }
+
+  record dispute = {
+    endsAt: int,
+    description: string,
+    validatorForVotes: int,
+    validatorAgainstVotes: int,
+    requestId: int,
+    isEnded: bool,
+    votes: map(address, bool) }
+
+  record state = {
+    id: int,
+    proposalCounter: int,
+    requestCounter: int,
+    proposals: map(int, proposal),
+    members: map(address, bool),
+    tokenContract: TokenContract,
+    tokenRequests: map(int, tokenRequest),
+    disputes: map(int, dispute),
+    parent: GuardInterface,
+    metadata: string,
+    requiredPercentage: int }
+  
+  datatype event
+    = ExecuteProposal(address, address, string, int) |
+      TokenRequested(int) |
+      DisputeRaise(int) |
+      DisputeEnded(int, bool)
+
+  stateful entrypoint init(id: int, tokenContract: TokenContract, requiredPercentage: int, metadata: string, parent: GuardInterface) : state =
+    { id = id, proposalCounter = 0, requestCounter = 0, proposals = {}, members = {}, tokenContract = tokenContract, tokenRequests = {}, disputes = {}, parent = parent, metadata = metadata, requiredPercentage = requiredPercentage }
+
+  entrypoint getTokenContract() : TokenContract =
+    state.tokenContract
+
+  entrypoint isMember(member: address) : bool =
+    state.tokenContract.balance(member) > 0
+  
+  entrypoint getProposal(proposalId: int) : option(proposal) =
+    Map.lookup(proposalId, state.proposals)
+
+  entrypoint getAllProposal() : map(int, proposal) =
+    state.proposals
+  
+  entrypoint getDispute(disputeId: int) : option(dispute) =
+    Map.lookup(disputeId, state.disputes)
+  
+  entrypoint getTokenRequest(requestId: int) : option(tokenRequest) =
+    Map.lookup(requestId, state.tokenRequests)
+  
+  entrypoint getMetaData() : string =
+      state.metadata
+
+  stateful entrypoint createProposal(description: string, flowId: string) : int =
+    require(isMember(Call.caller), "Caller is not a member!")
+    let proposalId = state.proposalCounter + 1
+    let newProposal = {
+      id = proposalId,
+      creator = Call.caller,
+      description = description,
+      forVotes = 0,
+      againstVotes = 0,
+      executed = false,
+      flowId = flowId,
+      votes = {} }
+    put(state{ proposalCounter = proposalId, proposals[proposalId] = newProposal })
+    proposalId
+  
+  stateful entrypoint raiseDispute(requestId: int, description: string) =
+    require(isMember(Call.caller) || false /* Or validator can raise dispute */, "Caller is not a member or validator!")
+    require(isTokenRequest(requestId), "Token request does not exsist!")
+    require(!isDispute(requestId), "Dispute already raised!")
+    let dispute = {
+      endsAt = Chain.block_height + 500,
+      description = description,
+      validatorForVotes = 0,
+      validatorAgainstVotes = 0,
+      requestId = requestId,
+      isEnded =  false,
+      votes = {} }
+    // Increase stake lock to startedAt + lockHeight
+    put(state{ disputes[requestId] = dispute })
+    Chain.event(DisputeRaise(requestId))
+  
+  stateful entrypoint voteDispute(requestId: int, inFavor: bool) =
+    require(state.parent.isValidator(Call.caller), "Caller is not a validator!")
+    require(isDispute(requestId), "Dispute does not exsist!")
+    require(!hasValidatorVoted(requestId, Call.caller), "validator already voted!")
+    require(!isDisputeTimeOut(requestId), "Voting window finished!")
+    require(!isDisputeEnded(requestId), "Dispute already ended!")
+    let dispute = state.disputes[requestId]
+    put(state{ disputes[requestId].votes[Call.caller] = inFavor })
+    if (inFavor)
+      put(state{ disputes[requestId].validatorForVotes = dispute.validatorForVotes + 1 })
+    else
+      put(state{ disputes[requestId].validatorAgainstVotes = dispute.validatorAgainstVotes + 1 })
+
+  stateful entrypoint endDispute(requestId: int) =
+    require(isMember(Call.caller) || state.parent.isValidator(Call.caller), "Caller is not a member or validator!")
+    require(isDispute(requestId), "Dispute does not exsist!")
+    require(!isDisputeEnded(requestId), "Dispute already ended!")
+    let totalValidators = state.parent.totalValidators()
+    let dispute = state.disputes[requestId]
+    let votePositive = dispute.validatorForVotes * 100 / totalValidators
+    let voteNegative = dispute.validatorAgainstVotes * 100 / totalValidators
+    if (voteNegative >= 51)
+      put(state{ disputes[requestId].isEnded = true })
+      Chain.event(DisputeEnded(requestId, false))
+    elif (votePositive >= 51)
+      // logic to reward dao loss
+      put(state{ disputes[requestId].isEnded = true })
+      Chain.event(DisputeEnded(requestId, true))
+    elif (isDisputeTimeOut(requestId))
+      // logic to reward dao loss
+      // and penalty against all non voter validators
+      put(state{ disputes[requestId].isEnded = true })
+      Chain.event(DisputeEnded(requestId, true))
+
+  stateful entrypoint requestToken(amount: int, token: option(AEX9Interface)) =
+    require(state.parent.isValidator(Call.caller), "Caller is not a validator")
+    if (Option.is_some(token))
+      Option.force(token).transfer(Call.caller, amount)
+    else
+      Chain.spend(Call.caller, amount)
+    let requestId = state.requestCounter
+    let tokenRequest = {
+      id = requestId,
+      validator = Call.caller, 
+      tokenAddress = token, 
+      amount = amount }
+    state.parent.increaseLock(Call.caller, Chain.block_height + 480, state.id)
+    put(state{ tokenRequests[requestId] = tokenRequest, requestCounter = requestId + 1 })
+  
+  stateful entrypoint vote(proposalId: int, inFavor: bool) =
+    require(isMember(Call.caller), "Caller is not a member")
+    require(isProposal(proposalId), "Proposal does not exist")
+    require(!hasVoted(proposalId, Call.caller), "Already voted on this proposal")
+
+    let tokenBalance = state.tokenContract.balance(Call.caller)
+    require(tokenBalance > 0, "Caller has no tokens to vote")
+
+    let proposal = state.proposals[proposalId]
+    let voteWeight = tokenBalance
+
+    put(state{ proposals[proposalId].votes[Call.caller] = inFavor })
+    if (inFavor)
+      put(state{ proposals[proposalId].forVotes = proposal.forVotes + voteWeight })
+    else
+      put(state{ proposals[proposalId].againstVotes = proposal.againstVotes + voteWeight })
+    
+    if (isApproved(proposalId))
+      executeProposal(proposalId)
+
+  stateful entrypoint executeProposal(proposalId: int) =
+    require(isMember(Call.caller), "Caller is not a member")
+    require(isProposal(proposalId), "Proposal does not exist")
+    let proposal = state.proposals[proposalId]
+    require(proposal.executed == false, "Proposal has already been executed")
+    let totalSupply = state.tokenContract.totalSupply()
+    let currentPercentage = proposal.forVotes * 100 / totalSupply
+    require(currentPercentage >= state.requiredPercentage, "Proposal does not have enough votes")
+    put(state{ proposals[proposalId].executed = true })
+    state.parent.executeProposal(state.id, proposal.flowId, proposalId)
+
+  function isProposal(proposalId: int) : bool =
+    Option.is_some(Map.lookup(proposalId, state.proposals))
+  
+  function isTokenRequest(requestId: int) : bool = 
+    Option.is_some(Map.lookup(requestId, state.tokenRequests))
+
+  function isDispute(requestId: int) : bool =
+    Option.is_some(Map.lookup(requestId, state.disputes))
+  
+  function isDisputeEnded(requestId: int) : bool =
+    state.disputes[requestId].isEnded
+
+  function isDisputeTimeOut(requestId: int) : bool =
+    Chain.block_height > state.disputes[requestId].endsAt
+
+  function hasValidatorVoted(requestId: int, validator: address) : bool =
+    Option.is_some(Map.lookup(validator, state.disputes[requestId].votes))
+
+  function hasVoted(proposalId: int, voter: address) : bool =
+    Option.is_some(Map.lookup(voter, state.proposals[proposalId].votes))
+  
+  function isApproved(proposalId: int) : bool =
+    let proposal = state.proposals[proposalId]
+    let totalSupply = state.tokenContract.totalSupply()
+    let currentPercentage = proposal.forVotes * 100 / totalSupply
+    currentPercentage >= state.requiredPercentage

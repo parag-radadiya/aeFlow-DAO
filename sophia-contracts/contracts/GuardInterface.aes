@@ -1,0 +1,25 @@
+include "Option.aes"
+
+contract interface GuardInterface =
+  record validator = {
+    stakedAmount: int,
+    unstakeLockTime: int,
+    isValidator: bool }
+
+  record voteBox = {
+    validator: address,
+    forVotes: int,
+    againstVotes: int,
+    votes: map(address, bool) }
+  
+  type distribution = map(address, int)
+  payable stateful entrypoint join : () => unit
+  stateful entrypoint setStakeAmount : (int) => unit
+  stateful entrypoint createVotingProposal : (address) => unit
+  stateful entrypoint voteToBlacklist : (address, bool) => unit
+  stateful entrypoint unstake : () => unit
+  entrypoint getblacklistVoting: (address) => option(voteBox)
+  entrypoint isValidator: (address) => bool
+  entrypoint totalValidators : () => int
+  stateful entrypoint increaseLock : (address, int, int) => unit
+  stateful entrypoint executeProposal : (int, string, int) => unit
