@@ -1,20 +1,16 @@
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import { Button, Grid, styled } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
+import { Box, Grid, styled, Avatar, Button } from '@mui/material'
 import mainLogo from './../assets/images/daologo.jpg'
 import { Link } from 'react-router-dom';
+import user from './../assets/images/wallet.png';
 
 const DaoNavbar = () => {
-
     const BoxWrapper = styled(Box)(() => ({
         '.appbar': {
             padding: '1.1rem 8rem',
-            background: '#fff',
             color: '#f5274e',
-            // background: 'linear-gradient(rgb(254,39,78) 0%, rgba(49, 100, 250, 0) 100%);'
-            background: '#fff'
+            background: '#0C0F1A'
         },
         '.dao-btn': {
             background: '#fff',
@@ -35,13 +31,11 @@ const DaoNavbar = () => {
             <AppBar className='appbar' elevation={0} position="fixed">
                 <Grid container spacing={0} >
                     <Grid item xs={12} xl={6} md={6}>
-                        <Link to='/dashboard'>
-                            <img src={mainLogo} alt='DAO-LOGO' width={'50px'} />
-                        </Link>
+                      
                     </Grid>
                     <Grid item xs={12} xl={6} md={6} >
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button variant="contained" className='dao-btn'> Connect wallet  <PersonIcon style={{ fontSize: '23px', paddingLeft: '8px' }} /> </Button>
+                            <Button variant="contained" className='dao-btn' disableElevation > <Avatar alt="Remy Sharp" src={user} sx={{ width: '24px', height: '24px', marginRight: '10px' }} />{window.walletAddressView}</Button>
                         </Box>
                     </Grid>
                 </Grid>

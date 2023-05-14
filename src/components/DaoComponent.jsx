@@ -7,10 +7,15 @@ const BoxWrapper = styled(Box)({
     '.dao-title': {
         fontSize: '28px',
         fontWeight: 700,
+        background: 'linear-gradient(to right, #ffefba, #ffffff)',
+        'WebkitBackgroundClip': 'text',
+        'WebkitTextFillColor': 'transparent'
     },
     '.description-dao': {
-        fontSize: '16px', lineHeight: '25px',
-        fontWeight: 600, padding: '10px'
+        fontSize: '16px', 
+        lineHeight: '25px',
+        fontWeight: 600,
+        color:'white'
     },
     '.view-btn': {
         background: '#f5274e',
@@ -22,15 +27,12 @@ const BoxWrapper = styled(Box)({
     },
 })
 
-const DaoComponent = ({ title, description, btnTitle, isFlag }) => {
+const DaoComponent = ({ title, description, btnTitle, isFlag,path }) => {
     return (
         <React.Fragment>
             <BoxWrapper>
-                <Card variant="outlined" sx={{ p: 3, border: '1px solid #f5274e', background: '#fff4f4', borderRadius: '12px' }}>
+                <Card  sx={{ p: 3,  background: '#444f5e', borderRadius: '12px', userSelect: 'none' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: '15px' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', width: '25%' }}>
-                            <img src={dao} alt='create-dao-image' width={'60%'} />
-                        </Box>
                         <Typography className='dao-title'>
                             {title}
                         </Typography>
@@ -42,7 +44,7 @@ const DaoComponent = ({ title, description, btnTitle, isFlag }) => {
                         <Typography sx={{ padding: '22px 10px', fontSize: '20px', fontWeight: 500, color: '#9AA5B1' }}>
                             Comming soon
                         </Typography> :
-                        <Link to='/create-dao'>
+                        <Link to={path}>
                             <Button variant="contained" className='view-btn' disableElevation>{btnTitle}  </Button>
                         </Link>
                     }

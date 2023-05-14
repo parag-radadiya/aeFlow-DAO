@@ -7,12 +7,25 @@ import { HiUsers } from 'react-icons/hi';
 const BoxWrapper = styled(Box)({
     margin: '20px 0px',
     '.explore-card': {
-        padding: '24px', borderRadius: '12px',
-        border: '2px solid #f5274e', height: '190px'
+        padding: '24px', 
+        borderRadius: '12px',
+        background: '#444f5e',
+        height: '190px',
+        cursor: 'pointer',
+        userSelect: 'none'
     },
     '.title': {
-        fontSize: '25px', fontWeight: 700,
-        color: '#323F4B'
+        fontSize: '25px', 
+        fontWeight: 700,
+        background: 'linear-gradient(to right, #ffefba, #ffffff)',
+        'WebkitBackgroundClip': 'text',
+        'WebkitTextFillColor': 'transparent'
+    },
+    '.subtitle': {
+        fontWeight: 700,
+        background: 'linear-gradient(to right, #ee0979, #ff6a00)',
+        'WebkitBackgroundClip': 'text',
+        'WebkitTextFillColor': 'transparent'
     },
     '.parent-explore': {
         display: 'flex',
@@ -21,30 +34,34 @@ const BoxWrapper = styled(Box)({
     },
     '.description-explore': {
         fontSize: '18px',
-        padding: '12px 0px'
+        padding: '12px 0px',
+        fontWeight: 500,
+        color:'white'
     },
     '.explore-stack': {
         padding: '10px 0px'
     },
     '.stack-title': {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        fontWeight: 500,
+        color:'whitesmoke'
     }
 })
 
-const Explore = ({ title, subTitle, description, btnTitle }) => {
+const Explore = ({ title, subTitle, description, icon }) => {
     return (
         <BoxWrapper>
             <Card className='explore-card' elevation={0}>
                 <Box className='parent-explore'>
                     <Box>
-                        <Avatar alt="Travis Howard" sx={{ width: 55, height: 55 }} src={user} />
+                        <Avatar alt="Travis Howard" sx={{ width: 55, height: 55 }} src={icon} />
                     </Box>
                     <Box>
                         <Typography className='title'>
                             {title}
                         </Typography>
-                        <Typography>
+                        <Typography className='subtitle'> 
                             {subTitle}
                         </Typography>
                     </Box>
@@ -54,7 +71,6 @@ const Explore = ({ title, subTitle, description, btnTitle }) => {
                 </Box>
                 <Box>
                     <Stack className='explore-stack' direction="row" spacing={2}>
-                        <Typography className='stack-title'> <BsBoxFill fontSize={'18px'} style={{ paddingRight: '10px', color: '#f5274e' }} /> Ethereum</Typography>
                         <Typography className='stack-title'> <HiUsers fontSize={'18px'} style={{ paddingRight: '10px', color: '#f5274e' }} /> Token-based </Typography>
                     </Stack>
                 </Box>

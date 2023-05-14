@@ -1,7 +1,7 @@
 import './App.css';
 import Setup from './components/Setup';
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard'
+import DaoDetail from './pages/DaoDetail'
 import {
   BrowserRouter as Router,
   Route, Routes
@@ -10,7 +10,8 @@ import DaoHome from './pages/DaoHome';
 import BuildDaoPage from './pages/BuildDaoPage';
 import ProposalForm from './pages/ProposalForm';
 import VotingPage from './pages/VotingPage';
-
+import Flow from './pages/FlowPage';
+import ViewFlow from './pages/ConditionView'
 
 function App() {
   return (
@@ -18,11 +19,14 @@ function App() {
       <Router>
         <Routes>
           <Route exact path='/' element={<Home />} />
-          <Route exact path='/dashboard' element={<Dashboard />} />
-          <Route exact path='/dao-homepage' element={<DaoHome />} />
+          <Route exact path='/dao' element={<DaoDetail />} />
+          <Route exact path='/dashboard' element={<DaoHome />} />
           <Route exact path='/create-dao' element={<BuildDaoPage />} />
           <Route exact path='/proposal' element={<ProposalForm />} />
           <Route exact path='/vote' element={<VotingPage />} />
+          <Route exact path='/create-flow' element={<Flow/>}/>
+          <Route exact path='/view-flow' element={<ViewFlow/>}/>
+          <Route path="/view-flow/:id" element={<ViewFlow />} />
         </Routes>
       </Router>
       {/* <Setup /> */}
